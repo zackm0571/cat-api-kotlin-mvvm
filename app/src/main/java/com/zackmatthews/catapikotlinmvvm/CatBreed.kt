@@ -3,15 +3,15 @@ package com.zackmatthews.catapikotlinmvvm
 import com.google.gson.annotations.SerializedName
 
 class CatBreed {
-    lateinit var id: String
-    lateinit var name: String
+    var id: String = ""
+    var name: String = ""
 
     @SerializedName("life_span")
-    lateinit var lifespan: String
-    lateinit var origin: String
+    var lifespan: String = ""
+    var origin: String = ""
 
     @SerializedName("wikipedia_url")
-    lateinit var wikipediaUrl: String
+    var wikipediaUrl: String = ""
 
     override fun toString(): String {
         return String.format(
