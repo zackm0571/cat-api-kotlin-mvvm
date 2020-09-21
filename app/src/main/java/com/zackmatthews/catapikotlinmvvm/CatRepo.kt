@@ -56,6 +56,86 @@ class CatRepo {
         return catImages
     }
 
+    /**
+     * Retrieves n [CatImage]s filtered by Breed or Category.
+     * Currently thecatapi returns an empty array when trying to search
+     * with more than one category OR breed. Note: given more time I would split up
+     * this api call.
+     *
+     * @param n             number of desired results
+     * @param catBreeds     list of [CatBreed]
+     * @param catCategories list of [CatCategory]
+     * @return list of n [CatImage]s
+     */
+    fun getCatImagesFromSearchFilters(
+        n: Int,
+        catBreeds: List<CatBreed>,
+        catCategories: List<CatCategory>
+    ): MutableLiveData<List<CatImage>> {
+        val results = ArrayList<CatImage>()
+        val breedIds = StringBuilder("")
+        val categoryIds = StringBuilder("")
+        for (i in catBreeds.indices) {
+            breedIds.append(catBreeds[i].id)
+            if (i != catBreeds.size - 1) {
+                breedIds.append(",")
+            }
+        }
+        for (j in catCategories.indices) {
+            categoryIds.append(catCategories[j].id)
+            if (j != catCategories.size - 1) {
+                categoryIds.append(",")
+            }
+        }
+        var call: Call<List<CatImage>>? = null
+        if (catBreeds.isNotEmpty()) {
+            call = catApi.searchByBreed(
+                n,
+                breedIds.toString()
+            )
+        } else {
+            call = catApi.searchByCategory(n, categoryIds.toString())
+            Log.d(
+                javaClass.simpleName,
+                String.format(
+                    "getCatImaqesFromSearchFilters(%d), request: %s",
+                    n,
+                    call.request().toString()
+                )
+            )
+        }
+        call.enqueue(object : Callback<List<CatImage>?> {
+            override fun onResponse(
+                call: Call<List<CatImage>?>,
+                response: Response<List<CatImage>?>
+            ) {
+                response.body().let {
+                    results.addAll(response.body()!!)
+                    Log.d(
+                        javaClass.simpleName,
+                        String.format("Results: %s", results.toString())
+                    )
+                }
+
+                catImages.postValue(results)
+            }
+
+            override fun onFailure(call: Call<List<CatImage>?>, t: Throwable) {
+                t.printStackTrace()
+                Log.d(
+                    javaClass.simpleName,
+                    String.format(
+                        "getCatImagesFromSearchFilters(%d) failed. Info: %s",
+                        n,
+                        call.request().toString()
+                    )
+                )
+            }
+        })
+        return catImages
+    }
+
+
     fun fetchBreeds(): MutableLiveData<List<CatBreed>> {
         val results: MutableList<CatBreed> = ArrayList()
         val apiCall: Call<List<CatBreed>> = catApi.getBreeds()
@@ -66,7 +146,10 @@ class CatRepo {
             ) {
                 response.body()?.let {
                     results.addAll(response.body()!!)
-                    Log.d(javaClass.simpleName, String.format("Results: %s", results.toString()))
+                    Log.d(
+                        javaClass.simpleName,
+                        String.format("Results: %s", results.toString())
+                    )
                 }
                 breeds.postValue(results)
             }
@@ -93,7 +176,10 @@ class CatRepo {
             ) {
                 response.body()?.let {
                     results.addAll(response.body()!!)
-                    Log.d(javaClass.simpleName, String.format("Results: %s", results.toString()))
+                    Log.d(
+                        javaClass.simpleName,
+                        String.format("Results: %s", results.toString())
+                    )
                 }
                 categories.postValue(results)
             }
