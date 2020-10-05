@@ -1,5 +1,6 @@
 package com.zackmatthews.catapikotlinmvvm
 
+import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,7 +15,7 @@ interface CatApi {
      * @return A list of {@link CatBreed}s.
      */
     @GET("/v1/breeds")
-    fun getBreeds(): Call<List<CatBreed>>
+    fun getBreeds(): Observable<List<CatBreed>>
 
     /**
      * Gets the complete list of categories that can be individually used as search filters.
@@ -22,7 +23,7 @@ interface CatApi {
      * @return A list of {@link CatCategory}s.
      */
     @GET("/v1/categories")
-    fun getCategories(): Call<List<CatCategory>>
+    fun getCategories(): Observable<List<CatCategory>>
 
     /**
      * Returns random images.
@@ -31,7 +32,7 @@ interface CatApi {
      * @return
      */
     @GET("/v1/images/search")
-    fun getRandomImages(@Query("limit") n: Int): Call<List<CatImage>>
+    fun getRandomImages(@Query("limit") n: Int): Observable<List<CatImage>>
 
     /**
      * Query the cat api and filter by breed. v1 of thecatapi does not allow querying with multiple breeds, the api will return an empty array.
@@ -44,7 +45,7 @@ interface CatApi {
     fun searchByBreed(
         @Query("limit") n: Int,
         @Query("breed_ids", encoded = true) breedIds: String
-    ): Call<List<CatImage>>
+    ): Observable<List<CatImage>>
 
     /**
      * Query the cat api and filter by category. v1 of thecatapi does not allow querying with multiple categories, the api will return an empty array.
@@ -57,5 +58,5 @@ interface CatApi {
     fun searchByCategory(
         @Query("limit") n: Int,
         @Query("category_ids", encoded = true) breedIds: String
-    ): Call<List<CatImage>>
+    ): Observable<List<CatImage>>
 }

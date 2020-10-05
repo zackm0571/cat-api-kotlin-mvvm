@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     private fun initViewModel() {
         viewModel.let {
             viewModel.getRandomCatImages().observe(this,
-                Observer<List<CatImage>> { it -> adapter.setImageData(it) })
+                Observer<List<CatImage>> { adapter.setImageData(it) })
             viewModel.fetchBreeds().observe(this, Observer {
                 for (breed in it) {
                     val chip = Chip(this)
